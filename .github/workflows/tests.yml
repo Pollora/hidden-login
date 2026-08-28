@@ -15,8 +15,8 @@ jobs:
       matrix:
         # The runtime floor is PHP 8.1, but the test tooling cannot go that low:
         # Pest 2.36+ and its paratest dependency require 8.2. The dedicated
-        # php-8.1-compatibility job below covers the floor instead.
-        php: [8.2, 8.3, 8.4]
+        # php-floor-compatibility job below covers the floor instead.
+        php: ['8.2', '8.3', '8.4']
         stability: [prefer-stable]
 
     name: PHP ${{ matrix.php }} - ${{ matrix.stability }}
@@ -38,7 +38,7 @@ jobs:
       - name: Execute tests
         run: vendor/bin/pest --testsuite=Unit
 
-  php-8.1-compatibility:
+  php-floor-compatibility:
     runs-on: ubuntu-latest
     name: PHP 8.1 - installable and parseable
 
@@ -53,7 +53,7 @@ jobs:
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
-          php-version: 8.1
+          php-version: '8.1'
           extensions: dom, curl, libxml, mbstring, zip
           coverage: none
 
@@ -73,7 +73,7 @@ jobs:
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
-          php-version: 8.3
+          php-version: '8.3'
           extensions: dom, curl, libxml, mbstring, zip
           coverage: none
 
