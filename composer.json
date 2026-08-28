@@ -9,7 +9,7 @@
         "hardening",
         "bedrock"
     ],
-    "license": "GPL-2.0-or-later",
+    "license": "MIT",
     "authors": [
         {
             "name": "Amphibee",
