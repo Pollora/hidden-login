@@ -1,0 +1,61 @@
+{
+    "name": "pollora/hidden-login",
+    "description": "Serve the WordPress login screen from a secret URL and return a 404 on wp-login.php and wp-admin",
+    "type": "library",
+    "keywords": [
+        "wordpress",
+        "security",
+        "login",
+        "hardening",
+        "bedrock"
+    ],
+    "license": "GPL-2.0-or-later",
+    "authors": [
+        {
+            "name": "Amphibee",
+            "email": "contact@amphibee.fr"
+        }
+    ],
+    "require": {
+        "php": ">=8.1"
+    },
+    "require-dev": {
+        "laravel/pint": "^1.18",
+        "pestphp/pest": "^2.34",
+        "phpstan/phpstan": "^2.1"
+    },
+    "autoload": {
+        "psr-4": {
+            "Pollora\\HiddenLogin\\": "src/"
+        },
+        "files": [
+            "bootstrap.php"
+        ]
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Pollora\\HiddenLogin\\Tests\\": "tests/"
+        }
+    },
+    "config": {
+        "sort-packages": true,
+        "allow-plugins": {
+            "pestphp/pest-plugin": true
+        }
+    },
+    "scripts": {
+        "test": [
+            "@test:unit",
+            "@phpstan",
+            "@lint:check"
+        ],
+        "test:unit": "pest --testsuite=Unit",
+        "test:coverage": "pest --coverage",
+        "phpstan": "phpstan analyse src tests --level=5",
+        "phpstan:ci": "phpstan analyse src tests --level=5 --no-progress",
+        "lint": "pint",
+        "lint:check": "pint --test"
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
+}

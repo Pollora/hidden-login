@@ -1,0 +1,30 @@
+parameters:
+    level: 5
+    paths:
+        - src
+        - tests
+    excludePaths:
+        - vendor/*
+    ignoreErrors:
+        # WordPress core functions and constants are only available at runtime,
+        # inside a booted WordPress installation. The package deliberately ships
+        # without WordPress stubs so that the Domain and Application layers stay
+        # analysable in isolation.
+        - '#Function [a-zA-Z0-9\\_]+ not found#'
+        - '#Call to undefined function [a-zA-Z0-9\\_]+#'
+        - '#Constant [A-Z0-9_]+ not found#'
+        - '#Class WP_[A-Za-z_]+ not found#'
+        - '#(has invalid type|has unknown class) WP_[A-Za-z_]+#'
+        - '#Instantiated class WP_[A-Za-z_]+ not found#'
+        - '#Call to (static )?method [a-zA-Z0-9_]+\(\) on an unknown class WP_[A-Za-z_]+#'
+        # Superglobals are untyped by nature; the adapters normalise them.
+        - '#Cannot access offset .+ on mixed#'
+        # Pollora and Laravel are optional integrations, resolved at runtime by
+        # PolloraHookRegistrar::isAvailable(). Requiring the framework just to
+        # analyse the adapter would drag in Laravel and raise the package's PHP
+        # floor from 8.1 to 8.3.
+        - '#unknown class (Pollora\\Support\\Facades|Illuminate\\Support\\Facades)\\[A-Za-z]+#'
+        - '#Class (Pollora\\Support\\Facades|Illuminate\\Support\\Facades)\\[A-Za-z]+ not found#'
+        # Pest.php issues
+        - '#Undefined variable: \$this#'
+    reportUnmatchedIgnoredErrors: false
