@@ -50,7 +50,7 @@ final class HiddenLogin
     /**
      * Package version, exposed for host applications that report their stack.
      */
-    public const VERSION = '1.0.0';
+    public const VERSION = '1.0.1';
 
     /**
      * Guards against registering the hooks twice.
