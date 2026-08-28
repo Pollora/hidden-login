@@ -23,7 +23,7 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
@@ -44,11 +44,14 @@ jobs:
 
     # The package declares php >=8.1 and must stay installable on sites that
     # have not moved past it. Its own test suite cannot run there, so this job
-    # verifies what actually matters to a consumer: that the runtime
-    # dependencies resolve and that every shipped file parses.
+    # checks what actually reaches a consumer on the floor: that the manifest is
+    # sound and that every shipped file parses. Nothing is installed on purpose
+    # — the package has no runtime dependency beyond PHP itself, and even
+    # `composer update --no-dev` would resolve the dev requirements to write a
+    # lock, which is exactly what 8.1 cannot satisfy.
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
@@ -57,8 +60,8 @@ jobs:
           extensions: dom, curl, libxml, mbstring, zip
           coverage: none
 
-      - name: Install runtime dependencies only
-        run: composer update --no-dev --prefer-stable --prefer-dist --no-interaction
+      - name: Validate the manifest
+        run: composer validate --strict --no-check-publish
 
       - name: Lint every shipped file
         run: find src bootstrap.php -name '*.php' -print0 | xargs -0 -n1 -P4 php -l
@@ -68,7 +71,7 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
