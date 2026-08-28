@@ -11,11 +11,12 @@ jobs:
   tests:
     runs-on: ubuntu-latest
     strategy:
-      fail-fast: true
+      fail-fast: false
       matrix:
-        # The package floor is PHP 8.1 so that it stays installable on a plain
-        # Bedrock site; 8.3 is what Pollora itself runs on.
-        php: [8.1, 8.2, 8.3, 8.4]
+        # The runtime floor is PHP 8.1, but the test tooling cannot go that low:
+        # Pest 2.36+ and its paratest dependency require 8.2. The dedicated
+        # php-8.1-compatibility job below covers the floor instead.
+        php: [8.2, 8.3, 8.4]
         stability: [prefer-stable]
 
     name: PHP ${{ matrix.php }} - ${{ matrix.stability }}
@@ -36,6 +37,31 @@ jobs:
 
       - name: Execute tests
         run: vendor/bin/pest --testsuite=Unit
+
+  php-8.1-compatibility:
+    runs-on: ubuntu-latest
+    name: PHP 8.1 - installable and parseable
+
+    # The package declares php >=8.1 and must stay installable on sites that
+    # have not moved past it. Its own test suite cannot run there, so this job
+    # verifies what actually matters to a consumer: that the runtime
+    # dependencies resolve and that every shipped file parses.
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: 8.1
+          extensions: dom, curl, libxml, mbstring, zip
+          coverage: none
+
+      - name: Install runtime dependencies only
+        run: composer update --no-dev --prefer-stable --prefer-dist --no-interaction
+
+      - name: Lint every shipped file
+        run: find src bootstrap.php -name '*.php' -print0 | xargs -0 -n1 -P4 php -l
 
   static-analysis:
     runs-on: ubuntu-latest
