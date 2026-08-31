@@ -70,6 +70,8 @@ of an installation nobody can reach a terminal on.
 | --- | --- |
 | `/<slug>` | The native login screen, with every `action` it supports |
 | `wp-login.php` | 404, for everyone |
+| `/login`, `/login.php`, `/wp-login.php` at the site root | 404 — core's `wp_redirect_admin_locations()` would otherwise redirect them to the slug |
+| `/admin`, `/dashboard` | Redirected to `wp-admin`, as core does — they disclose nothing |
 | `wp-admin/*`, anonymous | 404, emitted **before** `auth_redirect()` could leak the slug |
 | `wp-admin/*`, authenticated | Untouched |
 | `wp-admin/admin-ajax.php`, `admin-post.php` | Untouched — the public site depends on them |
@@ -138,11 +140,11 @@ decisions unit-testable without booting WordPress.
 ```
 src/
 ├── Domain/              LoginSlug, RequestPath, DefaultEndpoint, FeatureState — pure value objects
-├── Application/         ResolveLoginSlug, MatchHiddenLoginRequest,
-│                        GuardDefaultEndpoints, RewriteLoginUrl — pure decisions
+├── Application/         ResolveLoginSlug, MatchHiddenLoginRequest, GuardDefaultEndpoints,
+│                        ClassifyStockAlias, RewriteLoginUrl — pure decisions
 ├── Port/Out/            SlugProvider, FeatureToggle, HookRegistrar, RequestContext,
 │                        LoginScreenRenderer, NotFoundResponder
-├── Adapter/In/          Router, URL rewriter, admin notice, WP-CLI command
+├── Adapter/In/          Router, stock-alias router, URL rewriter, admin notice, WP-CLI command
 ├── Adapter/Out/WordPress/  Plugin API, superglobals, wp-login.php, theme 404
 ├── Adapter/Out/Pollora/    Hook registrar backed by the framework's facades
 ├── Bootstrap.php        Composer self-registration

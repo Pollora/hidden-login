@@ -8,6 +8,7 @@ use Pollora\HiddenLogin\Adapter\In\WordPress\Cli\HiddenLoginCommand;
 use Pollora\HiddenLogin\Adapter\In\WordPress\HiddenLoginRouter;
 use Pollora\HiddenLogin\Adapter\In\WordPress\LoginUrlRewriter;
 use Pollora\HiddenLogin\Adapter\In\WordPress\SlugCollisionNotice;
+use Pollora\HiddenLogin\Adapter\In\WordPress\StockAliasRouter;
 use Pollora\HiddenLogin\Adapter\Out\Pollora\PolloraHookRegistrar;
 use Pollora\HiddenLogin\Adapter\Out\WordPress\EnvironmentFeatureToggle;
 use Pollora\HiddenLogin\Adapter\Out\WordPress\EnvironmentSlugProvider;
@@ -15,6 +16,7 @@ use Pollora\HiddenLogin\Adapter\Out\WordPress\SuperglobalRequestContext;
 use Pollora\HiddenLogin\Adapter\Out\WordPress\ThemeNotFoundResponder;
 use Pollora\HiddenLogin\Adapter\Out\WordPress\WordPressHookRegistrar;
 use Pollora\HiddenLogin\Adapter\Out\WordPress\WpLoginScreenRenderer;
+use Pollora\HiddenLogin\Application\Service\ClassifyStockAlias;
 use Pollora\HiddenLogin\Application\Service\GuardDefaultEndpoints;
 use Pollora\HiddenLogin\Application\Service\MatchHiddenLoginRequest;
 use Pollora\HiddenLogin\Application\Service\ResolveLoginSlug;
@@ -50,7 +52,7 @@ final class HiddenLogin
     /**
      * Package version, exposed for host applications that report their stack.
      */
-    public const VERSION = '1.0.1';
+    public const VERSION = '1.0.2';
 
     /**
      * Guards against registering the hooks twice.
@@ -118,6 +120,8 @@ final class HiddenLogin
             new ThemeNotFoundResponder($context, $registrar),
             $registrar,
         ))->register();
+
+        (new StockAliasRouter(new ClassifyStockAlias, $context, $registrar))->register();
 
         (new SlugCollisionNotice($slug, $registrar))->register();
     }
